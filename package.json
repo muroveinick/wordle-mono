@@ -12,7 +12,8 @@
     "build:be": "cd packages/wordle-be && tsc",
     "start:be": "cd packages/wordle-be && node dist/index.js",
     "build": "npm run build:be && npm run build:fe",
-    "start": "npm run start:be"
+    "start": "npm run start:be",
+    "lint": "tsc --build"
   },
   "keywords": [
     "wordle",

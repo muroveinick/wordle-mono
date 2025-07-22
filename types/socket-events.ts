@@ -4,7 +4,7 @@ import { LetterStatus } from "./types";
 export interface GameStartedData {
   gameId: string;
   guesses: string[];
-  results: string[][];
+  results: LetterStatus[][];
 }
 
 export interface GuessResultData {
@@ -60,7 +60,7 @@ export interface SharedGamePlayerGuessData {
   gameId: string;
   player: SharedPlayer;
   guess: string;
-  result: string[];
+  result: LetterStatus[];
 }
 
 export interface SharedGameLeftData {

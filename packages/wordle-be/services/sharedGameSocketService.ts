@@ -1,6 +1,3 @@
-import { Server, Socket } from "socket.io";
-import logger from "../middleware/logger";
-import { ISharedPlayer } from "../models/SharedGame";
 import {
   ClientToServerEvents,
   ErrorData,
@@ -16,15 +13,18 @@ import {
   SharedGamePlayerLeftData,
   SharedGamePlayerOfflineData,
   SharedGamePlayerOnlineData,
+  SharedPlayer,
 } from "@types";
-import { SharedPlayer } from "@types";
+import { Server, Socket } from "socket.io";
+import logger from "../middleware/logger";
+import { ISharedPlayer } from "../models/SharedGame";
 import { SharedGameService } from "./sharedGameService";
 
 export class SharedGameSocketService {
   private static userSocketMap = new Map<string, string>(); // userId -> socketId
   private static socketGameMap = new Map<string, string>(); // socketId -> gameId
 
-  static setupHandlers(io: Server<ClientToServerEvents, ServerToClientEvents>, socket: Socket<ClientToServerEvents, ServerToClientEvents>, userId: string, username: string) {
+  static setupHandlers(_io: Server<ClientToServerEvents, ServerToClientEvents>, socket: Socket<ClientToServerEvents, ServerToClientEvents>, userId: string, username: string) {
     // Track this user's socket
     SharedGameSocketService.userSocketMap.set(userId, socket.id);
 
@@ -52,14 +52,12 @@ export class SharedGameSocketService {
     // Join an existing shared game
     socket.on("shared-game-join", async (data: SharedGameJoinData) => {
       try {
-        // Use atomic operation to prevent race conditions
+        console.log("Joined shared game:", data);
         const result = await SharedGameService.joinGameAtomic(data.gameId, userId, username);
 
-        // Join the socket room
         socket.join(`shared-game-${result.game.gameId}`);
         SharedGameSocketService.socketGameMap.set(socket.id, result.game.gameId);
 
-        // Send game joined confirmation to the joining player
         socket.emit("shared-game-joined", {
           gameId: result.game.gameId,
           players: result.game.players.map((p) => SharedGameSocketService.toSharedPlayer(p)),

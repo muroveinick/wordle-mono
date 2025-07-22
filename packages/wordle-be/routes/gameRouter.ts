@@ -51,7 +51,7 @@ router.get("/user/games", authMiddleware, async (req: AuthRequest, res) => {
 });
 
 // Get word statistics (for debugging)
-router.get("/debug/words", async (req, res) => {
+router.get("/debug/words", async (_req, res) => {
   try {
     const wordStats = wordService.getWordStats();
     res.json({

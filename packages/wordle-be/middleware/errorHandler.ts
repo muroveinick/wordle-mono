@@ -38,7 +38,7 @@ function createErrorResponse(code: ErrorCode, req: Request, details?: any, stack
 }
 
 // Global error handler middleware
-export const errorHandler = (err: AppError, req: Request, res: Response, next: NextFunction) => {
+export const errorHandler = (err: AppError, req: Request, res: Response) => {
   const code = err.code || ErrorCode.INTERNAL_SERVER_ERROR;
   const statusCode = err.statusCode || ERROR_HTTP_STATUS[code];
 
@@ -61,7 +61,7 @@ export const errorHandler = (err: AppError, req: Request, res: Response, next: N
 };
 
 // 404 handler
-export const notFoundHandler = (req: Request, res: Response, next: NextFunction) => {
+export const notFoundHandler = (req: Request, _res: Response, next: NextFunction) => {
   const error = new CustomError(ErrorCode.ENDPOINT_NOT_FOUND, `Route ${req.originalUrl} not found`);
   next(error);
 };

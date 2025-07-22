@@ -16,9 +16,9 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@types": ["./types"],
+      "@types": ["./types/index"],
       "@types/*": ["./types/*"]
     }
   },
-  "include": ["types", "packages"]
+  "include": ["types", "packages", "types.d.ts"]
 }

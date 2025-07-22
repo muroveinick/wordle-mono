@@ -1,7 +1,8 @@
+import { GameStartedData, GuessResult } from "@types";
 import { apiService } from "../../services/api";
 import { GameMode } from "../../services/gameService";
 import { Router } from "../../services/router";
-import { GameStartedData, GuessResult } from "@types";
+import { Logger } from "../../utils/logger";
 import { BaseGame } from "./BaseGame";
 import { BaseGameUtils } from "./BaseGameUtils";
 
@@ -45,7 +46,7 @@ export class Game extends BaseGame {
   }
 
   private processGameData(data: GameStartedData): void {
-    console.log("Game started:", data);
+    Logger.log("Game started:", data);
     this.resetGameState();
     this.gameState.setGameId(data.gameId);
 
@@ -95,7 +96,7 @@ export class Game extends BaseGame {
         this.showMessage("Game loaded!", "success");
       }
     } catch (error) {
-      console.error("Failed to load game:", error);
+      Logger.error("Failed to load game:", error);
       this.showMessage("Failed to load game. It may not exist or be inaccessible.", "error");
     }
   }
@@ -104,7 +105,6 @@ export class Game extends BaseGame {
     this.gameService.cleanup();
     this.resetGameState();
     this.setupSocketListeners();
-    console.log(this);
   }
 
   protected cleanupSpecific(): void {

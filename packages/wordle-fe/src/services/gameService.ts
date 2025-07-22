@@ -1,4 +1,5 @@
 import { SharedPlayer } from "@types";
+import { Logger } from "../utils/logger";
 import { getSocket, SocketService } from "./socket";
 
 export interface SharedGameData {
@@ -36,7 +37,7 @@ export class GameService {
   }
 
   public disconnect(): void {
-    console.warn("Disconnecting from game");
+    Logger.warn("Disconnecting from game");
     this.currentGameId = null;
     this.currentMode = null;
     this.cleanup();
@@ -87,7 +88,7 @@ export class GameService {
   }
 
   public leaveSharedGame(): void {
-    console.log("leave game", this.currentMode, this.currentGameId);
+    Logger.log("leave game", this.currentMode, this.currentGameId);
     if (this.currentMode !== GameMode.SHARED || !this.currentGameId) {
       throw new Error("Not connected to a shared game");
     }

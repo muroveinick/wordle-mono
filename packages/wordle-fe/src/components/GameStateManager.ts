@@ -1,4 +1,5 @@
 import { GameState, GuessResult } from "@types";
+import { Logger } from "../utils/logger";
 
 export class GameStateManager {
   private static instance: GameStateManager;
@@ -33,7 +34,7 @@ export class GameStateManager {
   }
 
   subscribe(listener: (state: GameState) => void): () => void {
-    console.warn("Subscribing to GameStateManager");
+    Logger.warn("Subscribing to GameStateManager");
 
     this.listeners.push(listener);
     return () => {
@@ -42,7 +43,7 @@ export class GameStateManager {
   }
 
   unsubscribe(listener: (state: GameState) => void): void {
-    console.warn("Unsubscribing from GameStateManager");
+    Logger.warn("Unsubscribing from GameStateManager");
 
     const index = this.listeners.indexOf(listener);
     if (index !== -1) {
@@ -52,7 +53,7 @@ export class GameStateManager {
 
   private notify(): void {
     const state = this.getState();
-    console.warn(this.listeners);
+    Logger.warn(this.listeners);
     this.listeners.forEach((listener) => listener(state));
   }
 

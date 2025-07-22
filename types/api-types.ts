@@ -1,7 +1,9 @@
+import { LetterStatus } from "./types";
+
 export interface GetGameResponse {
   gameId: string;
   guesses: string[];
-  results: string[][];
+  results: LetterStatus[][];
   isComplete: boolean;
   isWon: boolean;
   word?: string;

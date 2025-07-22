@@ -1,7 +1,7 @@
+import { ClientToServerEvents, ErrorData, GameStartedData, GuessResultData, MakeGuessData, ServerToClientEvents, StartGameData } from "@types";
 import { Server, Socket } from "socket.io";
 import logger from "../middleware/logger";
 import Game from "../models/Game";
-import { ClientToServerEvents, ErrorData, GameStartedData, GuessResultData, MakeGuessData, ServerToClientEvents, StartGameData } from "@types";
 import { AuthService } from "./authService";
 import { processGuess, startGame, validateGameGuess } from "./gameService";
 import { SharedGameSocketService } from "./sharedGameSocketService";

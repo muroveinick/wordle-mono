@@ -1,12 +1,11 @@
+import { SharedGamePlayerGuessData, SharedGamePlayerJoinedData, SharedGamePlayerOfflineData, SharedGamePlayerOnlineData, SharedPlayer } from "@types";
 import { GameMode, SharedGameData } from "../../services/gameService";
 import { Router } from "../../services/router";
-import { SharedGamePlayerGuessData, SharedGamePlayerJoinedData, SharedGamePlayerOfflineData, SharedGamePlayerOnlineData } from "@types";
-import { SharedPlayer } from "@types";
+import { Logger } from "../../utils/logger";
 import { PlayersSidebar } from "../PlayersSidebar";
 import { SharedGameSetup } from "../SharedGameSetup";
 import { BaseGame } from "./BaseGame";
 import { BaseGameUtils } from "./BaseGameUtils";
-
 export class SharedGame extends BaseGame {
   private gameId: string | null = null;
   private playersSidebar: PlayersSidebar | null = null;
@@ -51,19 +50,14 @@ export class SharedGame extends BaseGame {
       [
         "shared-game-joined",
         (data: SharedGameData) => {
-          // this.gameId = data.gameId;
-          // this.gameService.setCurrentGameId(data.gameId);
-
+          Logger.info("Joined shared game:", data);
           this.processGameId(data.gameId);
-
           // Restore current player's progress
           if (data.currentPlayer) {
             this.restorePlayerProgress(data.currentPlayer);
           }
           this.playersSidebar?.updatePlayers(data.players);
           this.showMessage("Joined shared game!", "success");
-          // this.render();
-
           // Trigger subscribers to update grid and keyboard with restored state
           // this.gameState.triggerUpdate();
         },

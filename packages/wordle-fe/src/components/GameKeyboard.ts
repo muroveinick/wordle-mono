@@ -1,4 +1,5 @@
 import { GameState, GuessResult } from "@types";
+import { Logger } from "../utils/logger";
 import { BaseGameUtils } from "./games/BaseGameUtils";
 import { GameStateManager } from "./GameStateManager";
 
@@ -17,7 +18,7 @@ export class GameKeyboard {
       }
       this.results = JSON.parse(JSON.stringify(newState.results));
     } catch (error) {
-      console.error("Failed to update state:", error);
+      Logger.error("Failed to update state:", error);
     }
   };
 

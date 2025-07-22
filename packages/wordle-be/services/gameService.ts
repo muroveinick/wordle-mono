@@ -1,6 +1,6 @@
+import { GuessResultData, IGame } from "@types";
 import mongoose from "mongoose";
 import Game from "../models/Game";
-import { GuessResultData, IGame } from "@types";
 import { checkGuess, InvalidWordResult, processGuessCore, validateGuess } from "../utils/guessUtils";
 import { wordService } from "./wordService";
 

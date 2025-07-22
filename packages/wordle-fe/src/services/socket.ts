@@ -1,10 +1,11 @@
 import { io, Socket } from "socket.io-client";
+import { Logger } from "../utils/logger";
 import { authService } from "./authService";
 import { EnvService } from "./envService";
 
 let _socketService: SocketService | null = null;
 export function setSocket(instance: SocketService | null): void {
-  console.log("Setting socket service");
+  Logger.log("Setting socket service");
   _socketService = instance;
 }
 
@@ -39,11 +40,11 @@ export class SocketService {
     });
 
     this.socket.on("connect", () => {
-      console.log("Connected to server");
+      Logger.warn("Connected to server");
     });
 
     this.socket.on("disconnect", () => {
-      console.log("Disconnected from server");
+      Logger.log("Disconnected from server");
     });
   }
 
@@ -92,7 +93,7 @@ export class SocketService {
 
   async waitForConnection(timeout: number = 5000): Promise<boolean> {
     if (this.isConnected()) {
-      console.log("Already connected");
+      Logger.log("Already connected");
 
       return true;
     }
@@ -110,7 +111,7 @@ export class SocketService {
   }
 
   emit(event: string, data?: any): void {
-    console.warn(!!this.socket, event, data);
+    Logger.warn(!!this.socket, event, data);
 
     if (this.socket) {
       this.socket.emit(event, data);

@@ -1,4 +1,5 @@
 import { GameService } from "../../services/gameService";
+import { Logger } from "../../utils/logger";
 import { GameGrid } from "../GameGrid";
 import { GameKeyboard } from "../GameKeyboard";
 import { GameMessage } from "../GameMessage";
@@ -31,11 +32,10 @@ export abstract class BaseGame {
   }
 
   protected initializeBaseComponents(): void {
-    console.log("Initializing base components", this.isInitialized);
+    Logger.log("Initializing base components", this.isInitialized);
     if (this.isInitialized) {
       this.gameGrid?.cleanup();
       this.gameKeyboard?.cleanup();
-      
     }
     // Create new components
     this.gameGrid = new GameGrid();
@@ -50,7 +50,7 @@ export abstract class BaseGame {
   protected resetGameState(): void {
     this.gameState.reset();
     const state = this.gameState.getState();
-    console.warn(!!this.gameGrid, !!this.gameKeyboard, "Updating grid");
+    Logger.warn(!!this.gameGrid, !!this.gameKeyboard, "Updating grid");
     if (this.gameGrid) {
       this.gameGrid.updateGrid(state);
     }

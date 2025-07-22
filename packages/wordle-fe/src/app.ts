@@ -6,6 +6,7 @@ import { SharedGame } from "./components/games/SharedGame";
 import { authService } from "./services/authService";
 import { Router } from "./services/router";
 import { SocketService, getSocket, setSocket } from "./services/socket";
+import { Logger } from "./utils/logger";
 
 export class App {
   private game?: Game;
@@ -104,7 +105,7 @@ export class App {
     });
 
     this.multiplayerButton.addEventListener("click", () => {
-      console.log("Navigating to shared game");
+      Logger.log("Navigating to shared game");
       this.router.navigate("/shared");
     });
   }
@@ -114,7 +115,7 @@ export class App {
 
     // Home route
     this.router.addRoute("/", () => {
-      console.log("Navigating to home");
+      Logger.log("Navigating to home");
       this.cleanUpGame();
       this.cleanUpSharedGame();
       this.startButton.style.display = "block";
@@ -137,7 +138,7 @@ export class App {
 
     // Shared game routes
     this.router.addRoute("/shared", () => {
-      console.log("Navigating to shared game");
+      Logger.log("Navigating to shared game");
 
       if (authService.isAuthenticated()) {
         this.showSharedGameView();
@@ -169,7 +170,7 @@ export class App {
 
   private async loadGameFromRoute(gameId: string): Promise<void> {
     if (!this.game) {
-      console.error("Game not initialized when trying to load game from route");
+      Logger.error("Game not initialized when trying to load game from route");
       this.router.navigate("/");
       return;
     }
@@ -177,7 +178,7 @@ export class App {
     try {
       await this.game.loadGameById(gameId);
     } catch (error) {
-      console.error("Failed to load game from route:", error);
+      Logger.error("Failed to load game from route:", error);
       this.router.navigate("/");
     }
   }
@@ -226,6 +227,7 @@ export class App {
     document.getElementById("shared-game-container")!.style.display = "block";
 
     this.cleanUpGame();
+    this.connectToServer();
 
     // Initialize shared game - always recreate if gameId is provided to ensure proper initialization
     if (!this.sharedGame || gameId) {
@@ -239,7 +241,7 @@ export class App {
   }
 
   private cleanUpSharedGame(): void {
-    console.log("shared game cleanup", !!this.sharedGame);
+    Logger.log("shared game cleanup", !!this.sharedGame);
     if (this.sharedGame) {
       this.sharedGame.cleanup();
       this.sharedGame = undefined;
@@ -247,7 +249,7 @@ export class App {
   }
 
   private cleanUpGame(): void {
-    console.log("game cleanup", !!this.game);
+    Logger.log("game cleanup", !!this.game);
     if (this.game) {
       this.game.cleanup();
       this.game.reset();
