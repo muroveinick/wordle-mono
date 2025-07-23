@@ -2,7 +2,7 @@
   "name": "worldle-mono",
   "version": "1.0.0",
   "description": "Monorepo for Worldle",
-  "main": "packages/wordle-be/dist/index.js",
+  "main": "packages/wordle-be/dist/server.js",
   "type": "module",
   "scripts": {
     "dev:fe": "cd packages/wordle-fe && vite",
@@ -10,7 +10,7 @@
     "start:fe": "cd packages/wordle-fe && vite preview --host 0.0.0.0 --port ${PORT:-8080}",
     "dev:be": "cd packages/wordle-be && nodemon --exec tsx server.ts",
     "build:be": "cd packages/wordle-be && tsc",
-    "start:be": "cd packages/wordle-be && node dist/index.js",
+    "start:be": "cd packages/wordle-be && node dist/server.js",
     "build": "npm run build:be && npm run build:fe",
     "start": "npm run start:be",
     "lint": "tsc --build"
