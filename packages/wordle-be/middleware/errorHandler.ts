@@ -1,6 +1,6 @@
 import { ErrorCode, ErrorResponse, ValidationErrorDetail, ValidationErrorResponse } from "@types";
 import { NextFunction, Request, Response } from "express";
-import { DuplicateKeyErrorResponse, ERROR_DESCRIPTIONS, ERROR_HTTP_STATUS, RateLimitErrorResponse } from "../types/errorTypes";
+import { DuplicateKeyErrorResponse, ERROR_DESCRIPTIONS, ERROR_HTTP_STATUS, RateLimitErrorResponse } from "../utils/errorTypes";
 import logger from "./logger";
 
 export interface AppError extends Error {

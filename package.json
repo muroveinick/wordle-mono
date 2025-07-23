@@ -10,7 +10,7 @@
     "start:fe": "cd packages/wordle-fe && vite preview --host 0.0.0.0 --port ${PORT:-8080}",
     "dev:be": "cd packages/wordle-be && nodemon --exec tsx server.ts",
     "build:be": "cd packages/wordle-be && tsc",
-    "start:be": "cd packages/wordle-be && node dist/server.js",
+    "start:be": "cd packages/wordle-be && node dist/packages/wordle-be/server.js",
     "build": "npm run build:be && npm run build:fe",
     "start": "npm run start:be",
     "lint": "tsc --build"

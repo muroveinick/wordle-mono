@@ -30,6 +30,9 @@ initializeMiddleware(app);
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/game", gameRoutes);
+app.get("/health", (_req, res) => {
+  res.json({ status: "OK", timestamp: new Date().toISOString() });
+});
 
 // Socket.io setup
 setupGameSocket(io);
