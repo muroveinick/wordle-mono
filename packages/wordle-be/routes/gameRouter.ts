@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Response } from "express";
 import { authMiddleware, AuthRequest, optionalAuthMiddleware } from "../middleware/auth";
 import * as gameService from "../services/gameService";
 import { wordService } from "../services/wordService";
@@ -6,7 +6,7 @@ import { wordService } from "../services/wordService";
 const router = express.Router();
 
 // Start a new game (or resume existing incomplete game)
-router.post("/start", authMiddleware, async (req: AuthRequest, res) => {
+router.post("/start", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user!.userId;
     const data = await gameService.startGame(userId);
@@ -17,7 +17,7 @@ router.post("/start", authMiddleware, async (req: AuthRequest, res) => {
 });
 
 // Get a specific game by ID
-router.get("/:gameId", optionalAuthMiddleware, async (req: AuthRequest, res) => {
+router.get("/:gameId", optionalAuthMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { gameId } = req.params;
     const data = await gameService.getGameById(gameId);
@@ -28,7 +28,7 @@ router.get("/:gameId", optionalAuthMiddleware, async (req: AuthRequest, res) => 
 });
 
 // Get aggregated statistics for a player
-router.get("/stats/:playerId", authMiddleware, async (req: AuthRequest, res) => {
+router.get("/stats/:playerId", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { playerId } = req.params;
     const data = await gameService.getStats(playerId);
@@ -39,7 +39,7 @@ router.get("/stats/:playerId", authMiddleware, async (req: AuthRequest, res) => 
 });
 
 // Get user's games
-router.get("/user/games", authMiddleware, async (req: AuthRequest, res) => {
+router.get("/user/games", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user!.userId;
     const limit = parseInt(req.query.limit as string) || 10;
@@ -51,7 +51,7 @@ router.get("/user/games", authMiddleware, async (req: AuthRequest, res) => {
 });
 
 // Get word statistics (for debugging)
-router.get("/debug/words", async (_req, res) => {
+router.get("/debug/words", async (_req: express.Request, res: Response) => {
   try {
     const wordStats = wordService.getWordStats();
     res.json({
