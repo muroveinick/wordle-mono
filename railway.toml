@@ -1,8 +1,22 @@
-[build]
-builder = "NIXPACKS"
-buildCommand = "npm run build"
+[[services]]
+name = "wordle-backend"
+source = "packages/wordle-be"
 
-[deploy]
-startCommand = "npm start"
-# healthcheckPath = "/"
-# healthcheckTimeout = 300
+[services.build]
+builder = "NIXPACKS"
+buildCommand = "npm run build:be"
+
+[services.deploy]
+startCommand = "npm run start:be"
+healthcheckPath = "/health"
+
+[[services]]
+name = "wordle-frontend"
+source = "packages/wordle-fe"
+
+[services.build]
+builder = "NIXPACKS"
+buildCommand = "npm run build:fe"
+
+[services.deploy]
+startCommand = "npm run start:fe"
