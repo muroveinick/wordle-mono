@@ -1,3 +1,8 @@
 {
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "start": "node dist/server.js",
+    "start:dev": "nodemon --exec tsx server.ts"
+  }
 }
