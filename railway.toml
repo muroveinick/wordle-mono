@@ -9,14 +9,3 @@ buildCommand = "npm run build:be"
 [services.deploy]
 startCommand = "npm run start:be"
 healthcheckPath = "/health"
-
-[[services]]
-name = "wordle-frontend"
-source = "packages/wordle-fe"
-
-[services.build]
-builder = "NIXPACKS"
-buildCommand = "npm run build:fe"
-
-[services.deploy]
-startCommand = "npm run start:fe"
