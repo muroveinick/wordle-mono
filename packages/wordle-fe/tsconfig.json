@@ -1,17 +1,17 @@
 {
+  // "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "target": "ES2022",
     "module": "ES2022",
-    "moduleResolution": "node",
-    "lib": ["ES2022"],
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "moduleResolution": "bundler",
     "outDir": "./dist",
     "baseUrl": ".",
     "resolveJsonModule": true,
     "noEmit": false,
     "esModuleInterop": true,
     "strict": false,
-    "skipLibCheck": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "@types": ["../../types/index"],
