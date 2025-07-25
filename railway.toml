@@ -1,11 +1,3 @@
-[install]
-command = "npm install"
-
-[build]
-builder = "NIXPACKS"
-buildCommand = "npm run build"
-
 [deploy]
-startCommand = "npm run start"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
