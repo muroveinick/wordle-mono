@@ -9,7 +9,7 @@ export default defineConfig({
   preview: {
     port: 8080,
     host: true,
-    allowedHosts: ["wordle-fe-production.up.railway.app"],
+    allowedHosts: ["fe-production-5276.up.railway.app", "wordle.muroveinick.com"],
   },
   build: {
     outDir: "dist",
