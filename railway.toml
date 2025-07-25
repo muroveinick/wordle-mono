@@ -1,11 +1,8 @@
-[[services]]
-name = "be"
-source = "packages/wordle-be"
-
-[services.build]
+[build]
 builder = "NIXPACKS"
-buildCommand = "npm run build:be"
+buildCommand = "npm install && npm run build"
 
-[services.deploy]
-startCommand = "npm run start:be"
+[deploy]
+startCommand = "npm run start"
 healthcheckPath = "/health"
+healthcheckTimeout = 300
