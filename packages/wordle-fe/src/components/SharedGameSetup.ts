@@ -37,12 +37,12 @@ export class SharedGameSetup {
   private render(): void {
     this.container.innerHTML = `
       <div class="shared-game-setup">
-        <h2 class="text-2xl font-bold text-center mb-6">Shared Wordle Game</h2>
+        <h2 class="text-2xl font-bold text-center mb-6">Shared Coop Game</h2>
         
         <div class="setup-options max-w-md mx-auto">
           <div class="mb-6">
             <button id="create-game-btn" class="w-full px-6 py-3 bg-green-600 hover:bg-green-700 rounded font-bold text-white">
-              Create New Shared Game
+              Create New Coop Game
             </button>
           </div>
           
@@ -57,7 +57,7 @@ export class SharedGameSetup {
               maxlength="6"
             />
             <button id="join-game-btn" class="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded font-bold text-white">
-              Join Shared Game
+              Join Coop Game
             </button>
           </div>
         </div>

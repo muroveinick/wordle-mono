@@ -4,6 +4,7 @@ import { UserProfile } from "./components/UserProfile";
 import { Game } from "./components/games/Game";
 import { SharedGame } from "./components/games/SharedGame";
 import { authService } from "./services/authService";
+import { ContainerManager } from "./services/containerManager";
 import { Router } from "./services/router";
 import { SocketService, getSocket, setSocket } from "./services/socket";
 import { Logger } from "./utils/logger";
@@ -17,6 +18,7 @@ export class App {
   private authForm!: AuthForm;
   private userProfile!: UserProfile;
   private sharedGame?: SharedGame;
+  private containerManager!: ContainerManager;
 
   constructor() {
     this.connectToServer();
@@ -24,47 +26,55 @@ export class App {
     this.setupElements();
     this.setupGameEventListeners();
     this.setupRouter();
-    this.checkAuthAndShowContent();
 
     (window as any)["app"] = this;
   }
 
   private createHTML(): void {
     document.body.innerHTML = `
-      <div class="min-h-screen bg-gray-900 text-white p-4">
+      <div class="min-h-screen bg-gray-900 text-white">
         <div id="auth-container" style="display: none;"></div>
-        <div id="user-profile-container"></div>
         
-        <div id="game-content" class="max-w-md mx-auto">
-          <h1 id="game-title" class="text-4xl font-bold text-center mb-8">Wordle</h1>
-          
-          <div class="flex flex-col items-center gap-4 mb-8">
-            <div class="flex justify-center gap-4">
-              <button id="start-btn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded font-bold">
-                Start Single Player
-              </button>
-              <button id="shared-game-btn" class="px-6 py-2 bg-green-600 hover:bg-green-700 rounded font-bold">
-                Play Shared Game
-              </button>
+        <!-- Header -->
+        <header class="bg-gray-800 border-b border-gray-700 p-4">
+          <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <h1 id="game-title" class="text-3xl font-bold cursor-pointer hover:text-blue-400 transition-colors">Wordle</h1>
+            <div id="user-profile-container"></div>
+          </div>
+        </header>
+        
+        <!-- Main Content -->
+        <div class="p-4">
+          <div id="game-content" class="max-w-md mx-auto">
+            <div class="flex flex-col items-center gap-4 mb-8">
+              <div class="flex justify-center gap-4">
+                <button id="start-btn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded font-bold">
+                  Start Single Player
+                </button>
+                <button id="shared-game-btn" class="px-6 py-2 bg-green-600 hover:bg-green-700 rounded font-bold">
+                  Play Coop Game
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-          
+            
           <div id="shared-game-container" class="max-w-6xl mx-auto" style="display: none;"></div>
           <div id="basic-game-container" class="max-w-6xl mx-auto" style="display: none;"></div>
 
-          <div class="text-center mt-8 text-sm text-gray-400">
+          <footer id="game-footer" class="text-center mt-8 text-sm text-gray-400" style="display: none;">
             <p>Use your keyboard or click the buttons to play</p>
             <p>Green = correct letter and position</p>
             <p>Yellow = correct letter, wrong position</p>
             <p>Gray = letter not in word</p>
-          </div>
-        
+          </footer>
+        </div>
       </div>
     `;
   }
 
   private setupElements(): void {
+    this.containerManager = ContainerManager.getInstance();
+
     const authContainer = document.getElementById("auth-container") as HTMLElement;
     const userProfileContainer = document.getElementById("user-profile-container") as HTMLElement;
 
@@ -118,11 +128,15 @@ export class App {
       Logger.log("Navigating to home");
       this.cleanUpGame();
       this.cleanUpSharedGame();
+      this.containerManager.setViewState("home");
       this.startButton.style.display = "block";
     });
 
     // Game route
     this.router.addRoute("/games/:gameId", (params: { gameId: string }) => {
+      Logger.log("Navigating to game", params.gameId);
+      this.containerManager.setViewState("singlePlayer");
+
       if (!this.game) {
         // If game is not initialized, redirect to auth or initialize first
         if (authService.isAuthenticated()) {
@@ -139,6 +153,7 @@ export class App {
     // Shared game routes
     this.router.addRoute("/shared", () => {
       Logger.log("Navigating to shared game");
+      this.containerManager.setViewState("sharedGame");
 
       if (authService.isAuthenticated()) {
         this.showSharedGameView();
@@ -148,6 +163,8 @@ export class App {
     });
 
     this.router.addRoute("/shared/:gameId", async (params: { gameId: string }) => {
+      this.containerManager.setViewState("sharedGame");
+
       if (authService.isAuthenticated()) {
         if (this.sharedGame) {
           this.sharedGame.processGameId(params.gameId);
@@ -188,24 +205,14 @@ export class App {
     getSocket().connect();
   }
 
-  private async checkAuthAndShowContent(): Promise<void> {
-    const isAuthenticated = await authService.verifyToken();
-
-    if (isAuthenticated) {
-      this.showGameContent();
-    } else {
-      this.showAuthForm();
-    }
-  }
-
   private showAuthForm(): void {
-    document.getElementById("game-content")!.style.display = "none";
+    this.containerManager.setViewState("auth");
     this.authForm.show();
     this.userProfile.hide();
   }
 
   private showGameContent(): void {
-    document.getElementById("game-content")!.style.display = "block";
+    this.containerManager.setViewState("home");
     this.authForm.hide();
     this.userProfile.show();
   }
@@ -222,10 +229,6 @@ export class App {
   }
 
   private showSharedGameView(gameId?: string): void {
-    // Hide single player UI
-    document.getElementById("basic-game-container")!.style.display = "none";
-    document.getElementById("shared-game-container")!.style.display = "block";
-
     this.cleanUpGame();
     this.connectToServer();
 
