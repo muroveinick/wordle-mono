@@ -1,4 +1,4 @@
-import { GameState, LetterStatus, SharedPlayer, LetterStatusMap } from "@types";
+import { GameState, LetterStatus, LetterStatusMap, SharedPlayer } from "@types";
 import { authService } from "../services/authService";
 import { GameStateManager } from "./GameStateManager";
 import { BaseGameUtils } from "./games/BaseGameUtils";
@@ -129,7 +129,6 @@ export class PlayersSidebar {
   private updatePlayerCard(player: SharedPlayer): void {
     const existingCard = this.findPlayerCard(player.userId);
     if (existingCard) {
-
       // Replace the existing card with updated HTML
       const user = authService.getUser();
       const newCardHTML = this.renderPlayerCard(player, user);
@@ -225,7 +224,8 @@ export class PlayersSidebar {
   private letterStatusesToSquares(result: LetterStatus[]): string {
     return result
       .map((status) => {
-        return `<span class="square ${status}"></span>`;
+        const cssClass = LetterStatusMap[status];
+        return `<span class="square ${cssClass}"></span>`;
       })
       .join("");
   }
