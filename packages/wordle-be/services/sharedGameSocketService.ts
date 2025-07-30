@@ -15,7 +15,7 @@ import {
   SharedGamePlayerOnlineData,
   SharedPlayer,
 } from "@types";
-import User from "models/User";
+import User from "../models/User";
 import { Server, Socket } from "socket.io";
 import logger from "../middleware/logger";
 import { ISharedPlayer } from "../models/SharedGame";
