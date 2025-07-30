@@ -104,8 +104,6 @@ export class Game extends BaseGame {
 
   protected cleanupSpecific(): void {
     this.gameService.cleanup();
-    // this.gameState.setGuessSubmitCallback();
-
     this.CONTAINER.innerHTML = "";
   }
 }

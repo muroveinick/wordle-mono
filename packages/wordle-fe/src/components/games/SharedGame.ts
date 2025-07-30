@@ -231,7 +231,6 @@ export class SharedGame extends BaseGame {
     this.playersSidebar?.cleanup();
     this.sharedGameSetup?.cleanup();
     this.gameService.cleanup();
-    // this.gameState.setGuessSubmitCallback();
     this.gameService.disconnect();
     this.gameService.wentOffline();
     this.CONTAINER.innerHTML = "";
