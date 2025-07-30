@@ -1,4 +1,5 @@
 import { GameState, GuessResult, GuessResultData, InvalidWordData, LetterStatus } from "@types";
+import { GameService } from "../../services/gameService";
 import { GameMessage } from "../GameMessage";
 import { GameStateManager } from "../GameStateManager";
 
@@ -60,8 +61,8 @@ export class BaseGameUtils {
     const state = gameState.getState();
 
     if (state.currentGuess.length === 5 && !state.isComplete) {
-      // Always emit the guess-submitted event so both single and multiplayer modes can handle it
-      gameState.submitGuess(state.currentGuess);
+      const gameService = GameService.getInstance();
+      gameService.makeGuess(gameService.getCurrentGameId(), state.currentGuess);
     } else if (state.currentGuess.length < 5) {
       BaseGameUtils.showMessage("Not enough letters", "info");
     }
@@ -85,6 +86,8 @@ export class BaseGameUtils {
 
     gameState.setCurrentGuess("");
     gameState.nextRow();
+
+    gameState.triggerUpdate();
   }
 
   /**

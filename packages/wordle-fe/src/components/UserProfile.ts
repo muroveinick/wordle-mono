@@ -20,11 +20,9 @@ export class UserProfile {
     }
 
     this.container.innerHTML = `
-      <div class="user-profile">
-        <div class="user-info">
-          <span class="username">Welcome, ${this.user.username}!</span>
-          <button id="logout-btn" class="logout-button">Logout</button>
-        </div>
+      <div class="user-info">
+        <span class="username">Welcome, ${this.user.username}!</span>
+        <button id="logout-btn" class="logout-button">Logout</button>
       </div>
     `;
 

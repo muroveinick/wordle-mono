@@ -73,12 +73,12 @@ export class GameStateManager {
 
   addGuess(guess: string): void {
     this.state.guesses.push(guess);
-    this.notify();
+    // this.notify();
   }
 
   addResult(result: GuessResult[]): void {
     this.state.results.push(result);
-    this.notify();
+    // this.notify();
   }
 
   setGameComplete(isComplete: boolean, isWon: boolean, word?: string): void {
@@ -93,7 +93,7 @@ export class GameStateManager {
   nextRow(): void {
     this.state.currentRow++;
     this.state.currentCol = 0;
-    this.notify();
+    // this.notify();
   }
 
   updateColumn(col: number): void {
@@ -123,20 +123,5 @@ export class GameStateManager {
 
   isMultiplayerMode(): boolean {
     return this.isMultiplayer;
-  }
-
-  // Submit a guess - now uses callback instead of events
-  private guessSubmitCallback?: (guess: string) => void;
-
-  setGuessSubmitCallback(callback?: (guess: string) => void): void {
-    this.guessSubmitCallback = callback;
-  }
-
-  submitGuess(guess: string): void {
-    if (this.state.isComplete) return;
-
-    if (this.guessSubmitCallback) {
-      this.guessSubmitCallback(guess);
-    }
   }
 }

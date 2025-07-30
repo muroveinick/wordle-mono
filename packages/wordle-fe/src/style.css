@@ -18,8 +18,7 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-    "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -93,17 +92,12 @@ body {
   @apply hidden;
 }
 
-/* User profile styles */
-.user-profile {
-  @apply fixed top-4 right-4 z-40;
-}
-
 .user-info {
   @apply bg-white rounded-lg px-4 py-2 shadow-md flex items-center gap-3;
 }
 
 .username {
-  @apply text-gray-800 font-medium;
+  @apply text-gray-800 font-medium max-w-[200px] text-ellipsis overflow-hidden whitespace-nowrap;
 }
 
 .logout-button {
@@ -119,18 +113,6 @@ body {
   @apply px-2 text-xs;
 }
 
-.correct {
-  @apply bg-emerald-600 border-emerald-600;
-}
-
-.present {
-  @apply bg-amber-600 border-amber-600;
-}
-
-.absent {
-  @apply bg-gray-700 border-gray-600;
-}
-
 /* Buttons should have pointer cursor on hover */
 button {
   @apply cursor-pointer;
@@ -142,7 +124,7 @@ button {
 
 /* Player results list container */
 .player-results {
-  @apply justify-self-start bg-gray-800 p-1 gap-1 flex flex-col;
+  @apply bg-gray-800 p-1 gap-1 flex flex-col justify-self-center mt-2;
 }
 
 /* Main title should have pointer cursor since it's clickable */
@@ -159,4 +141,70 @@ button {
 }
 .status-offline {
   @apply bg-gray-600 opacity-60;
+}
+
+.player-name {
+  @apply font-bold flex items-center;
+}
+
+.player-username {
+  @apply block max-w-[150px] text-ellipsis overflow-hidden whitespace-nowrap;
+}
+
+.game-grid-container {
+  @apply flex flex-col items-center mb-8;
+}
+
+.guess-progress {
+  @apply flex gap-1 ml-2 flex-shrink-0;
+}
+
+.guess-dot {
+  @apply w-1.5 h-1.5 rounded-full bg-white;
+}
+
+.view-toggle-btn {
+  @apply w-6 h-6 bg-gray-600 rounded transition-colors flex items-center justify-center;
+  @apply text-white cursor-pointer font-bold text-sm;
+}
+
+.view-toggle-btn:hover {
+  @apply bg-gray-500;
+}
+
+.player-card {
+  @apply p-3 bg-gray-700 border-b border-gray-600;
+
+  &.current-user {
+    @apply border-2 border-blue-500;
+
+    .player-name {
+      @apply text-blue-400;
+    }
+  }
+}
+
+.players-list {
+  @apply border-0 rounded overflow-y-auto;
+  max-height: 400px;
+}
+
+.correct {
+  @apply bg-emerald-600 border-emerald-600;
+}
+
+.present {
+  @apply bg-amber-600 border-amber-600;
+}
+
+.absent {
+  @apply bg-gray-700 border-gray-600;
+}
+
+/* Game ID copy styles */
+.game-id-copy {
+  @apply text-blue-400 cursor-pointer transition-colors;
+  &:hover {
+    @apply text-blue-300 ;
+  }
 }

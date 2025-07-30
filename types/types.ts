@@ -1,6 +1,15 @@
 import { Document } from "mongoose";
 
-export type LetterStatus = "correct" | "present" | "absent" | "empty";
+// Letter status: "c" = correct, "p" = present, "a" = absent, "e" = empty
+export type LetterStatus = "c" | "p" | "a" | "e";
+
+// Mapping for CSS classes and display purposes
+export const LetterStatusMap: Record<LetterStatus, string> = {
+  c: "correct",
+  p: "present",
+  a: "absent",
+  e: "empty",
+} as const;
 
 export interface GuessResult {
   letter: string;

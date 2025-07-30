@@ -1,4 +1,4 @@
-import { GameStartedData, GuessResult } from "@types";
+import { GameStartedData } from "@types";
 import { apiService } from "../../services/api";
 import { GameMode } from "../../services/gameService";
 import { Router } from "../../services/router";
@@ -21,7 +21,13 @@ export class Game extends BaseGame {
     this.CONTAINER.style.display = "block";
   }
 
+  private processGameId(gameId: string) {
+    this.gameService.setCurrentGameId(gameId);
+    this.gameService.setMode(GameMode.SINGLE_PLAYER);
+  }
+
   private onGameStarted(gameId: string) {
+    this.processGameId(gameId);
     Router.getInstance().navigate(`/games/${gameId}`);
   }
 
@@ -35,14 +41,6 @@ export class Game extends BaseGame {
     ]);
 
     this.gameService.setupEventSubscriptions(socketEvents);
-
-    // Setup guess submission callback
-    this.gameState.setGuessSubmitCallback((guess: string) => {
-      const state = this.gameState.getState();
-      if (state.gameId) {
-        this.gameService.makeGuess(state.gameId, guess);
-      }
-    });
   }
 
   private processGameData(data: GameStartedData): void {
@@ -50,32 +48,29 @@ export class Game extends BaseGame {
     this.resetGameState();
     this.gameState.setGameId(data.gameId);
 
-    // If the server sent any previous guesses (e.g., on reconnection or spectator join), process them
-    if (Array.isArray(data.guesses) && data.guesses.length > 0) {
-      data.guesses.forEach((guess, index) => {
-        this.gameState.addGuess(guess);
-
-        // If we have results for this guess, process them
-        if (data.results && data.results[index]) {
-          const result: GuessResult[] = data.results[index].map((status: string, letterIndex: number) => ({
-            letter: guess[letterIndex],
-            status: status as "correct" | "present" | "absent",
-          }));
-          this.gameState.addResult(result);
-        }
-
-        this.gameState.nextRow();
-      });
-    }
+    data.guesses.forEach((g, index) =>
+      BaseGameUtils.processGuessResultData({
+        guess: g,
+        result: data.results[index],
+        isComplete: false,
+        isWon: false,
+      })
+    );
   }
 
   private handleGameStarted(data: GameStartedData): void {
-    this.onGameStarted(data.gameId);
+    if (this.gameService.getCurrentGameId() !== data.gameId) {
+      this.onGameStarted(data.gameId);
+    }
+
     this.showMessage("Game started!", "success");
   }
 
-  startGame(): void {
+  startGame(gameId?: string): void {
     this.gameService.startSingleGame();
+    if (gameId) {
+      this.processGameId(gameId);
+    }
   }
 
   async loadGameById(gameId: string): Promise<void> {
@@ -109,7 +104,7 @@ export class Game extends BaseGame {
 
   protected cleanupSpecific(): void {
     this.gameService.cleanup();
-    this.gameState.setGuessSubmitCallback();
+    // this.gameState.setGuessSubmitCallback();
 
     this.CONTAINER.innerHTML = "";
   }

@@ -8,7 +8,7 @@ export class SharedGameService {
   /**
    * Create a new shared game with a random word
    */
-  static async createGame(creatorId: string, creatorUsername: string): Promise<ISharedGame> {
+  static async createGame(creatorId: string): Promise<ISharedGame> {
     // Generate unique gameId with retry logic
     let gameId: string;
     gameId = (SharedGame as any).generateGameId();
@@ -27,7 +27,7 @@ export class SharedGameService {
       createdBy: new mongoose.Types.ObjectId(creatorId),
     });
 
-    game.addPlayer(creatorId, creatorUsername);
+    game.addPlayer(creatorId);
     console.log("Game created:", game);
 
     // Add creator as first player
@@ -46,7 +46,7 @@ export class SharedGameService {
   /**
    * Atomically join a shared game to prevent race conditions
    */
-  static async joinGameAtomic(gameId: string, userId: string, username: string): Promise<{
+  static async joinGameAtomic(gameId: string, userId: string): Promise<{
     game: ISharedGame;
     player: any;
     alreadyInGame: boolean;
@@ -90,7 +90,6 @@ export class SharedGameService {
     // Player doesn't exist, add them atomically
     const newPlayer = {
       userId: userObjectId,
-      username,
       guesses: [],
       results: [],
       isComplete: false,
@@ -200,7 +199,7 @@ export class SharedGameService {
       throw new Error("Player not found in game");
     }
 
-    const guessResult = processGuessCore(game.word, guess, player.guesses, 6, false);
+    const guessResult = processGuessCore(game.word, guess, player.guesses, 6);
 
     // Update player
     game.updatePlayerGuess(userId, guessResult.guess, guessResult.result, guessResult.isComplete, guessResult.isWon);

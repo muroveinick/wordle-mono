@@ -2,12 +2,8 @@ export class GameMessage {
   private messageElement: HTMLElement;
   private currentTimeout: number | null = null;
 
-  constructor(containerSelector: string = "body") {
-    const container = document.querySelector(containerSelector);
-    if (!container) {
-      throw new Error(`Container not found for selector: ${containerSelector}`);
-    }
-    
+  constructor() {
+    const container = document.querySelector("body");
     const ribbon = document.createElement("div");
     ribbon.className = "ribbon";
     container.appendChild(ribbon);

@@ -55,8 +55,11 @@ export class AuthService {
   static async login(loginData: LoginRequest): Promise<AuthResponse> {
     const { username, password } = loginData;
 
-    // Find user
-    const user = await User.findOne({ username });
+    // Find user by username or email
+    const isEmail = username.includes('@');
+    const user = await User.findOne(
+      isEmail ? { email: username } : { username }
+    );
     if (!user) {
       throw new Error("Invalid username or password");
     }

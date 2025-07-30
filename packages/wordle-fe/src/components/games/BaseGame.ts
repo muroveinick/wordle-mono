@@ -26,7 +26,7 @@ export abstract class BaseGame {
 
   protected drawBaseComponents(): void {
     this.CONTAINER.innerHTML += `
-      <div id="game-grid-container" class="flex flex-col items-center mb-8"></div>
+      <div id="game-grid-container" class="game-grid-container"></div>
       <div id="game-keyboard-container" class="flex flex-col items-center"></div>
     `;
   }
@@ -50,7 +50,6 @@ export abstract class BaseGame {
   protected resetGameState(): void {
     this.gameState.reset();
     const state = this.gameState.getState();
-    Logger.warn(!!this.gameGrid, !!this.gameKeyboard, "Updating grid");
     if (this.gameGrid) {
       this.gameGrid.updateGrid(state);
     }

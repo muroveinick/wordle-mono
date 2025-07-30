@@ -71,6 +71,7 @@ export function setupGameSocket(io: Server<ClientToServerEvents, ServerToClientE
         logger.info("Socket user authenticated for shared games", { userId, username, socketId: socket.id });
       } catch (error) {
         logger.warn("Socket authentication failed, proceeding without auth", { socketId: socket.id, error: error instanceof Error ? error.message : String(error) });
+        socket.emit("error", { message: "Socket authentication failed" } as ErrorData);
       }
     }
 

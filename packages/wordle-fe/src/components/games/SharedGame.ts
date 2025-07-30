@@ -1,7 +1,6 @@
 import { SharedGamePlayerGuessData, SharedGamePlayerJoinedData, SharedGamePlayerOfflineData, SharedGamePlayerOnlineData, SharedPlayer } from "@types";
 import { GameMode, SharedGameData } from "../../services/gameService";
 import { Router } from "../../services/router";
-import { Logger } from "../../utils/logger";
 import { PlayersSidebar } from "../PlayersSidebar";
 import { SharedGameSetup } from "../SharedGameSetup";
 import { BaseGame } from "./BaseGame";
@@ -50,7 +49,6 @@ export class SharedGame extends BaseGame {
       [
         "shared-game-joined",
         (data: SharedGameData) => {
-          Logger.info("Joined shared game:", data);
           this.processGameId(data.gameId);
           // Restore current player's progress
           if (data.currentPlayer) {
@@ -58,8 +56,6 @@ export class SharedGame extends BaseGame {
           }
           this.playersSidebar?.updatePlayers(data.players);
           this.showMessage("Joined shared game!", "success");
-          // Trigger subscribers to update grid and keyboard with restored state
-          // this.gameState.triggerUpdate();
         },
       ],
       [
@@ -109,13 +105,6 @@ export class SharedGame extends BaseGame {
     ]);
 
     this.gameService.setupEventSubscriptions(sharedGameEvents);
-
-    // Setup guess submission callback
-    this.gameState.setGuessSubmitCallback((guess: string) => {
-      if (this.gameId) {
-        this.gameService.makeGuess(this.gameId, guess);
-      }
-    });
   }
 
   private restorePlayerProgress(player: SharedPlayer): void {
@@ -158,29 +147,33 @@ export class SharedGame extends BaseGame {
         <div class="shared-game">
           <div class="game-header mb-6">
             <div class="flex justify-between items-center">
-              <h2 class="text-xl font-bold">Shared Game: ${this.gameId}</h2>
-              <div class="game-actions">
-                <button id="copy-link-btn" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded text-sm">
-                  Copy Link
-                </button>
-                <button id="leave-game-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm ml-2">
-                  Leave Game
-                </button>
+              <div class="flex items-center gap-2">
+                <h2 class="text-xl font-bold">Shared Game:</h2>
+                <span id="game-id-copy" class="text-xl font-bold game-id-copy" title="Click to copy game code">${this.gameId}</span>
               </div>
+       
             </div>
           </div>
           
           <div class="game-content flex gap-8">
             <div class="main-game flex-1">
-              <div id="game-grid-container" class="game-grid-container mb-6"></div>
-              <div id="game-message-container" class="game-message-container mb-4"></div>
+              <div id="game-grid-container" class="game-grid-container"></div>
+              <div id="game-message-container" class="game-message-container"></div>
               <div id="game-keyboard-container" class="game-keyboard-container"></div>
             </div>
-            
             <div id="players-sidebar-container"></div>
           </div>
         </div>
       `;
+
+      //   <div class="game-actions">
+      //   <button id="copy-link-btn" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded text-sm">
+      //     Copy Link
+      //   </button>
+      //   <button id="leave-game-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm ml-2">
+      //     Leave Game
+      //   </button>
+      // </div>
 
       this.initializeBaseComponents();
       this.initializePlayersSidebar();
@@ -191,11 +184,19 @@ export class SharedGame extends BaseGame {
   private setupGameEventListeners(): void {
     const copyLinkBtn = this.CONTAINER.querySelector("#copy-link-btn") as HTMLButtonElement;
     const leaveGameBtn = this.CONTAINER.querySelector("#leave-game-btn") as HTMLButtonElement;
+    const gameIdCopy = this.CONTAINER.querySelector("#game-id-copy") as HTMLSpanElement;
 
     copyLinkBtn?.addEventListener("click", () => {
       const gameLink = `${window.location.origin}/shared/${this.gameId}`;
       navigator.clipboard.writeText(gameLink);
       this.showMessage("Game link copied to clipboard!", "success");
+    });
+
+    gameIdCopy?.addEventListener("click", () => {
+      if (this.gameId) {
+        navigator.clipboard.writeText(this.gameId);
+        this.showMessage("Game code copied to clipboard!", "success");
+      }
     });
 
     leaveGameBtn?.addEventListener("click", () => {
@@ -230,7 +231,7 @@ export class SharedGame extends BaseGame {
     this.playersSidebar?.cleanup();
     this.sharedGameSetup?.cleanup();
     this.gameService.cleanup();
-    this.gameState.setGuessSubmitCallback();
+    // this.gameState.setGuessSubmitCallback();
     this.gameService.disconnect();
     this.gameService.wentOffline();
     this.CONTAINER.innerHTML = "";

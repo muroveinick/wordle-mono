@@ -3,7 +3,6 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface ISharedPlayer {
   userId: mongoose.Types.ObjectId;
-  username: string;
   guesses: string[];
   results: LetterStatus[][]; // Array of arrays for each guess result
   isComplete: boolean;
@@ -19,7 +18,7 @@ export interface ISharedGame extends Document {
   createdBy: mongoose.Types.ObjectId;
 
   // Instance methods
-  addPlayer(userId: string, username: string): void;
+  addPlayer(userId: string): void;
   removePlayer(userId: string): void;
   updatePlayerGuess(userId: string, guess: string, result: string[], isComplete: boolean, isWon: boolean): void;
   getPlayerByUserId(userId: string): ISharedPlayer | undefined;
@@ -27,7 +26,6 @@ export interface ISharedGame extends Document {
 
 const SharedPlayerSchema = new Schema<ISharedPlayer>({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  username: { type: String, required: true },
   guesses: [{ type: String }],
   results: [[{ type: String }]], // Array of arrays
   isComplete: { type: Boolean, default: false },
@@ -54,14 +52,13 @@ SharedGameSchema.statics.generateGameId = function (): string {
 };
 
 // Instance methods
-SharedGameSchema.methods.addPlayer = function (userId: string, username: string) {
+SharedGameSchema.methods.addPlayer = function (userId: string) {
   // Check if player already exists
   const existingPlayer = this.players.find((p: ISharedPlayer) => p.userId.toString() === userId);
 
   if (!existingPlayer) {
     this.players.push({
       userId: new mongoose.Types.ObjectId(userId),
-      username,
       guesses: [],
       results: [],
       isComplete: false,

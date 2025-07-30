@@ -1,4 +1,4 @@
-import { GameState } from "@types";
+import { GameState, LetterStatusMap } from "@types";
 import { GameStateManager } from "./GameStateManager";
 
 export class GameGrid {
@@ -73,7 +73,7 @@ export class GameGrid {
           const tile = document.getElementById(`tile-${rowIndex}-${col}`);
           if (tile) {
             tile.textContent = guess[col];
-            tile.className = `tile ${result[col].status}`;
+            tile.className = `tile ${LetterStatusMap[result[col].status]}`;
           }
         }
       }

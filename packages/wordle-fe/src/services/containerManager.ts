@@ -42,17 +42,14 @@ export class ContainerManager {
   }
 
   showContainer(type: ContainerType): void {
-    console.log("Showing container", type);
     this.getContainer(type).style.display = "block";
   }
 
   hideContainer(type: ContainerType): void {
-    console.log("Hiding container", type);
     this.getContainer(type).style.display = "none";
   }
 
   hideAllContainers(): void {
-    console.warn("Hiding all containers");
     this.containers.forEach(container => {
       container.style.display = "none";
     });

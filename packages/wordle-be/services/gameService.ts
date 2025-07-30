@@ -31,7 +31,7 @@ export async function validateGameGuess(game: IGame | null, guess: string): Prom
 }
 
 export async function processGuess(game: IGame, guess: string): Promise<GuessResultData> {
-  const guessResult = processGuessCore(game.word, guess, game.guesses, 6, true);
+  const guessResult = processGuessCore(game.word, guess, game.guesses, 6);
 
   game.guesses.push(guessResult.guess);
   game.isComplete = guessResult.isComplete;

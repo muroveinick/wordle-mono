@@ -11,9 +11,9 @@ import { Logger } from "./utils/logger";
 
 export class App {
   private game?: Game;
-  private startButton!: HTMLButtonElement;
+  private startGameButton!: HTMLButtonElement;
   private title!: HTMLButtonElement;
-  private multiplayerButton!: HTMLButtonElement;
+  private startSharedGameButton!: HTMLButtonElement;
   private router!: Router;
   private authForm!: AuthForm;
   private userProfile!: UserProfile;
@@ -21,7 +21,7 @@ export class App {
   private containerManager!: ContainerManager;
 
   constructor() {
-    this.connectToServer();
+    setSocket(new SocketService());
     this.createHTML();
     this.setupElements();
     this.setupGameEventListeners();
@@ -39,7 +39,7 @@ export class App {
         <header class="bg-gray-800 border-b border-gray-700 p-4">
           <div class="max-w-6xl mx-auto flex items-center justify-between">
             <h1 id="game-title" class="text-3xl font-bold cursor-pointer hover:text-blue-400 transition-colors">Wordle</h1>
-            <div id="user-profile-container"></div>
+            <div id="user-profile-container" class="flex flex-basis-1/2"></div>
           </div>
         </header>
         
@@ -78,9 +78,9 @@ export class App {
     const authContainer = document.getElementById("auth-container") as HTMLElement;
     const userProfileContainer = document.getElementById("user-profile-container") as HTMLElement;
 
-    this.startButton = document.getElementById("start-btn") as HTMLButtonElement;
+    this.startGameButton = document.getElementById("start-btn") as HTMLButtonElement;
     this.title = document.getElementById("game-title") as HTMLButtonElement;
-    this.multiplayerButton = document.getElementById("shared-game-btn") as HTMLButtonElement;
+    this.startSharedGameButton = document.getElementById("shared-game-btn") as HTMLButtonElement;
 
     this.authForm = new AuthForm(authContainer, (user) => {
       this.onAuthSuccess(user);
@@ -91,30 +91,28 @@ export class App {
     });
   }
 
-  private initializeGame(): void {
-    if (this.game) {
-      return; // Game already initialized
+  public startGame(gameId?: string): void {
+    this.containerManager.setViewState("singlePlayer");
+    GameStateManager.getInstance().reset();
+    this.connectToServer();
+
+    if (!this.game) {
+      this.cleanUpSharedGame();
+      this.game = new Game();
+      this.game.startGame(gameId);
     }
-    this.cleanUpSharedGame();
-    this.game = new Game();
   }
 
   private setupGameEventListeners(): void {
-    this.startButton.addEventListener("click", () => {
-      GameStateManager.getInstance().reset();
-
-      if (!this.game) {
-        this.initializeGame();
-      }
-      // this.showSinglePlayerView();
-      this.game!.startGame();
+    this.startGameButton.addEventListener("click", () => {
+      this.startGame();
     });
 
     this.title.addEventListener("click", () => {
       this.router.navigate("/");
     });
 
-    this.multiplayerButton.addEventListener("click", () => {
+    this.startSharedGameButton.addEventListener("click", () => {
       Logger.log("Navigating to shared game");
       this.router.navigate("/shared");
     });
@@ -128,32 +126,32 @@ export class App {
       Logger.log("Navigating to home");
       this.cleanUpGame();
       this.cleanUpSharedGame();
-      this.containerManager.setViewState("home");
-      this.startButton.style.display = "block";
+      if (authService.isAuthenticated()) {
+        this.containerManager.setViewState("home");
+      } else {
+        this.showAuthForm();
+      }
     });
 
     // Game route
     this.router.addRoute("/games/:gameId", (params: { gameId: string }) => {
-      Logger.log("Navigating to game", params.gameId);
       this.containerManager.setViewState("singlePlayer");
 
-      if (!this.game) {
-        // If game is not initialized, redirect to auth or initialize first
-        if (authService.isAuthenticated()) {
-          this.initializeGame();
-          this.loadGameFromRoute(params.gameId);
-        } else {
-          this.router.navigate("/");
+      // If game is not initialized, redirect to auth or initialize first
+      if (authService.isAuthenticated()) {
+        if (!this.game) {
+          this.startGame(params.gameId);
         }
+        this.game.loadGameById(params.gameId);
       } else {
-        this.loadGameFromRoute(params.gameId);
+        this.router.navigate("/");
       }
     });
 
     // Shared game routes
     this.router.addRoute("/shared", () => {
-      Logger.log("Navigating to shared game");
       this.containerManager.setViewState("sharedGame");
+      this.connectToServer();
 
       if (authService.isAuthenticated()) {
         this.showSharedGameView();
@@ -185,22 +183,10 @@ export class App {
     this.router.start();
   }
 
-  private async loadGameFromRoute(gameId: string): Promise<void> {
-    if (!this.game) {
-      Logger.error("Game not initialized when trying to load game from route");
-      this.router.navigate("/");
+  private connectToServer(): void {
+    if (getSocket().isConnected()) {
       return;
     }
-
-    try {
-      await this.game.loadGameById(gameId);
-    } catch (error) {
-      Logger.error("Failed to load game from route:", error);
-      this.router.navigate("/");
-    }
-  }
-
-  private connectToServer(): void {
     setSocket(new SocketService());
     getSocket().connect();
   }
@@ -236,7 +222,7 @@ export class App {
     if (!this.sharedGame || gameId) {
       // Clean up existing shared game if gameId is provided
       if (this.sharedGame && gameId) {
-        this.sharedGame.cleanup();
+        this.cleanUpSharedGame();
       }
 
       this.sharedGame = new SharedGame(gameId);
@@ -255,7 +241,6 @@ export class App {
     Logger.log("game cleanup", !!this.game);
     if (this.game) {
       this.game.cleanup();
-      this.game.reset();
       this.game = undefined;
     }
   }

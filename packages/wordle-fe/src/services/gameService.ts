@@ -95,21 +95,15 @@ export class GameService {
     this.socket.emit("shared-game-leave", { gameId: this.currentGameId });
   }
 
-  // Event management
-  public on(event: string, callback: (...args: any[]) => void): void {
-    this.socket.on(event, callback);
-  }
-
-  public off(event: string): void {
-    this.socket.off(event);
-  }
-
   // Cleanup
   public cleanup(): void {
+    Logger.log("Cleaning up game service");
     this.eventSubscriptions.forEach((_handler, eventName) => {
-      this.socket.off(eventName);
+      this.socket.off(eventName, _handler);
     });
     this.eventSubscriptions.clear();
+    this.currentGameId = null;
+    this.currentMode = null;
   }
 
   // Getters

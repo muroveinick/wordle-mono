@@ -15,6 +15,7 @@ import {
   SharedGamePlayerOnlineData,
   SharedPlayer,
 } from "@types";
+import User from "models/User";
 import { Server, Socket } from "socket.io";
 import logger from "../middleware/logger";
 import { ISharedPlayer } from "../models/SharedGame";
@@ -32,7 +33,7 @@ export class SharedGameSocketService {
     // Create a new shared game
     socket.on("shared-game-create", async () => {
       try {
-        const game = await SharedGameService.createGame(userId, username);
+        const game = await SharedGameService.createGame(userId);
 
         // Join the socket room
         socket.join(`shared-game-${game.gameId}`);
@@ -42,7 +43,7 @@ export class SharedGameSocketService {
         socket.emit("shared-game-created", {
           gameId: game.gameId,
           word: game.word, // Only send to creator initially
-          players: game.players.map((p) => SharedGameSocketService.toSharedPlayer(p)),
+          players: await Promise.all(game.players.map((p) => SharedGameSocketService.toSharedPlayer(p))),
         } as SharedGameCreatedData);
       } catch (error: any) {
         socket.emit("error", { message: error.message || "Failed to create game" } as ErrorData);
@@ -53,15 +54,15 @@ export class SharedGameSocketService {
     socket.on("shared-game-join", async (data: SharedGameJoinData) => {
       try {
         console.log("Joined shared game:", data);
-        const result = await SharedGameService.joinGameAtomic(data.gameId, userId, username);
+        const result = await SharedGameService.joinGameAtomic(data.gameId, userId);
 
         socket.join(`shared-game-${result.game.gameId}`);
         SharedGameSocketService.socketGameMap.set(socket.id, result.game.gameId);
 
         socket.emit("shared-game-joined", {
           gameId: result.game.gameId,
-          players: result.game.players.map((p) => SharedGameSocketService.toSharedPlayer(p)),
-          currentPlayer: SharedGameSocketService.toSharedPlayer(result.player, true),
+          players: await Promise.all(result.game.players.map((p) => SharedGameSocketService.toSharedPlayer(p))),
+          currentPlayer: await SharedGameSocketService.toSharedPlayer(result.player, true),
         } as SharedGameJoinedData);
 
         // Emit appropriate event based on whether this is a new join or reconnection
@@ -76,7 +77,7 @@ export class SharedGameSocketService {
           // New player joining for the first time
           socket.to(`shared-game-${result.game.gameId}`).emit("shared-game-player-joined", {
             gameId: result.game.gameId,
-            player: SharedGameSocketService.toSharedPlayer(result.player, true),
+            player: await SharedGameSocketService.toSharedPlayer(result.player, true),
           } as SharedGamePlayerJoinedData);
         }
       } catch (error: any) {
@@ -120,7 +121,7 @@ export class SharedGameSocketService {
         if (player) {
           socket.to(`shared-game-${gameId}`).emit("shared-game-player-guess", {
             gameId: gameId,
-            player: SharedGameSocketService.toSharedPlayer(player, true),
+            player: await SharedGameSocketService.toSharedPlayer(player, true),
             guess: guess,
             result: result.result,
           });
@@ -192,10 +193,14 @@ export class SharedGameSocketService {
   }
 
   // Helper method to convert ISharedPlayer to SharedPlayer object
-  static toSharedPlayer(player: ISharedPlayer, forceOnline?: boolean): SharedPlayer {
+  static async toSharedPlayer(player: ISharedPlayer, forceOnline?: boolean): Promise<SharedPlayer> {
+    const user = await User.findById(player.userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
     return {
       userId: player.userId.toString(),
-      username: player.username,
+      username: user.username,
       guesses: player.guesses,
       results: player.results,
       isComplete: player.isComplete,

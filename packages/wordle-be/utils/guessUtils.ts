@@ -1,5 +1,5 @@
-import { wordService } from "../services/wordService";
 import { GuessResultData, LetterStatus } from "@types";
+import { wordService } from "../services/wordService";
 
 export interface InvalidWordResult {
   isInvalidWord: true;
@@ -34,18 +34,18 @@ export function checkGuess(word: string, guess: string): LetterStatus[] {
 
   for (let i = 0; i < 5; i++) {
     if (guessLetters[i] === wordLetters[i]) {
-      result[i] = "correct";
+      result[i] = 'c';
     } else if (wordLetters.includes(guessLetters[i])) {
-      result[i] = "present";
+      result[i] = "p";
     } else {
-      result[i] = "absent";
+      result[i] = "a";
     }
   }
 
   return result;
 }
 
-export function processGuessCore(targetWord: string, guess: string, currentGuesses: string[], maxGuesses: number = 6, includeWordOnComplete: boolean = true): GuessResultData {
+export function processGuessCore(targetWord: string, guess: string, currentGuesses: string[], maxGuesses: number = 6): GuessResultData {
   if (guess.length !== 5) {
     throw new Error("Guess must be 5 letters");
   }
@@ -61,6 +61,6 @@ export function processGuessCore(targetWord: string, guess: string, currentGuess
     result,
     isComplete,
     isWon,
-    word: isComplete && includeWordOnComplete ? targetWord : undefined,
+    word: isComplete ? targetWord : undefined,
   };
 }

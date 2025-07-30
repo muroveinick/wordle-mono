@@ -1,4 +1,4 @@
-import { GameState, GuessResult } from "@types";
+import { GameState, GuessResult, LetterStatusMap } from "@types";
 import { Logger } from "../utils/logger";
 import { BaseGameUtils } from "./games/BaseGameUtils";
 import { GameStateManager } from "./GameStateManager";
@@ -100,12 +100,13 @@ export class GameKeyboard {
           key.classList.remove("correct", "present", "absent");
 
           // Add the appropriate status class
-          if (cell.status === "correct") {
-            key.classList.add("correct");
-          } else if (cell.status === "present" && !key.classList.contains("correct")) {
-            key.classList.add("present");
-          } else if (cell.status === "absent" && !key.classList.contains("correct") && !key.classList.contains("present")) {
-            key.classList.add("absent");
+          const cssClass = LetterStatusMap[cell.status];
+          if (cell.status === "c") {
+            key.classList.add(cssClass);
+          } else if (cell.status === "p" && !key.classList.contains("correct")) {
+            key.classList.add(cssClass);
+          } else if (cell.status === "a" && !key.classList.contains("correct") && !key.classList.contains("present")) {
+            key.classList.add(cssClass);
           }
         }
       });
