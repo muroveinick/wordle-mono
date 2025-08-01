@@ -1,4 +1,4 @@
-import { SharedGamePlayerGuessData, SharedGamePlayerJoinedData, SharedGamePlayerOfflineData, SharedGamePlayerOnlineData, SharedPlayer } from "@types";
+import { InvalidWordData, SharedGamePlayerGuessData, SharedGamePlayerJoinedData, SharedGamePlayerOfflineData, SharedGamePlayerOnlineData, SharedPlayer } from "@types";
 import { GameMode, SharedGameData } from "../../services/gameService";
 import { Router } from "../../services/router";
 import { PlayersSidebar } from "../PlayersSidebar";
@@ -100,7 +100,7 @@ export class SharedGame extends BaseGame {
         },
       ],
 
-      ["invalid-word", BaseGameUtils.handleInvalidWord],
+      ["invalid-word", (data: InvalidWordData) => this.handleInvalidWord(data)],
       ["error", BaseGameUtils.handleError],
     ]);
 
@@ -161,7 +161,7 @@ export class SharedGame extends BaseGame {
               <div id="game-message-container" class="game-message-container"></div>
               <div id="game-keyboard-container" class="game-keyboard-container"></div>
             </div>
-            <div id="players-sidebar-container"></div>
+            <div id="players-sidebar-container" class="flex-1"></div>
           </div>
         </div>
       `;

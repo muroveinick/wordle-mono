@@ -90,4 +90,16 @@ export class GameGrid {
   cleanup(): void {
     this.gameState.unsubscribe(this.subscriber);
   }
+
+  shakeCurrentRow(): void {
+    const state = this.gameState.getState();
+    const currentRowElement = this.gridElement.children[state.currentRow] as HTMLElement;
+
+    if (currentRowElement) {
+      currentRowElement.classList.add("shake");
+      setTimeout(() => {
+        currentRowElement.classList.remove("shake");
+      }, 500);
+    }
+  }
 }

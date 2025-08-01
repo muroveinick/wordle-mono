@@ -1,9 +1,11 @@
+import { InvalidWordData } from "@types";
 import { GameService } from "../../services/gameService";
 import { Logger } from "../../utils/logger";
 import { GameGrid } from "../GameGrid";
 import { GameKeyboard } from "../GameKeyboard";
 import { GameMessage } from "../GameMessage";
 import { GameStateManager } from "../GameStateManager";
+import { BaseGameUtils } from "./BaseGameUtils";
 
 export abstract class BaseGame {
   protected gameState: GameStateManager;
@@ -56,6 +58,11 @@ export abstract class BaseGame {
     if (this.gameKeyboard) {
       this.gameKeyboard.reset();
     }
+  }
+
+  handleInvalidWord(data: InvalidWordData): void {
+    BaseGameUtils.showMessage(data.message, "error");
+    this.gameGrid?.shakeCurrentRow();
   }
 
   /**

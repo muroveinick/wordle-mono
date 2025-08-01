@@ -1,4 +1,4 @@
-import { GameStartedData } from "@types";
+import { GameStartedData, InvalidWordData } from "@types";
 import { apiService } from "../../services/api";
 import { GameMode } from "../../services/gameService";
 import { Router } from "../../services/router";
@@ -36,7 +36,7 @@ export class Game extends BaseGame {
     const socketEvents = new Map<string, (...args: any[]) => void>([
       ["game-started", (data: GameStartedData) => this.handleGameStarted(data)],
       ["guess-result", BaseGameUtils.processGuessResultData],
-      ["invalid-word", BaseGameUtils.handleInvalidWord],
+      ["invalid-word", (data: InvalidWordData) => this.handleInvalidWord(data)],
       ["error", BaseGameUtils.handleError],
     ]);
 
@@ -44,7 +44,7 @@ export class Game extends BaseGame {
   }
 
   private processGameData(data: GameStartedData): void {
-    Logger.log("Game started:", data);
+    Logger.warn("Game started:", data);
     this.resetGameState();
     this.gameState.setGameId(data.gameId);
 
@@ -67,9 +67,18 @@ export class Game extends BaseGame {
   }
 
   startGame(gameId?: string): void {
-    this.gameService.startSingleGame();
+    // this.gameService.startSingleGame();
     if (gameId) {
-      this.processGameId(gameId);
+      this.loadGameById(gameId)
+        .then(() => {
+          this.processGameId(gameId);
+        })
+        .catch((error) => {
+          Logger.error("Failed to load game:", error);
+          this.showMessage("Failed to load game. It may not exist or be inaccessible.", "error");
+        });
+    } else {
+      this.gameService.startSingleGame();
     }
   }
 
@@ -88,6 +97,7 @@ export class Game extends BaseGame {
           this.showMessage(`Game completed - The word was: ${gameData.word}`, "error");
         }
       } else {
+        this.gameService.startSingleGame();
         this.showMessage("Game loaded!", "success");
       }
     } catch (error) {

@@ -1,14 +1,10 @@
-import { authService } from "../services/authService";
 import { UserShort } from "@types";
+import { authService } from "../services/authService";
 
 export class UserProfile {
-  private container: HTMLElement;
   private user: UserShort | null = null;
-  private onLogout?: () => void;
 
-  constructor(container: HTMLElement, onLogout?: () => void) {
-    this.container = container;
-    this.onLogout = onLogout;
+  constructor(private container: HTMLElement, private onLogout?: () => void) {
     this.user = authService.getUser();
     this.render();
   }

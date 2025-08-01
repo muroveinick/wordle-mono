@@ -1,4 +1,4 @@
-import { GameState, GuessResult, GuessResultData, InvalidWordData, LetterStatus } from "@types";
+import { GameState, GuessResult, GuessResultData, LetterStatus } from "@types";
 import { GameService } from "../../services/gameService";
 import { GameMessage } from "../GameMessage";
 import { GameStateManager } from "../GameStateManager";
@@ -88,15 +88,6 @@ export class BaseGameUtils {
     gameState.nextRow();
 
     gameState.triggerUpdate();
-  }
-
-  /**
-   * Common event handler for invalid word
-   */
-  static handleInvalidWord(data: InvalidWordData): void {
-    BaseGameUtils.showMessage(data.message, "error");
-    const gameState = GameStateManager.getInstance();
-    gameState.setCurrentGuess("");
   }
 
   /**

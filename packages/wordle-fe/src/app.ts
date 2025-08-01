@@ -92,6 +92,7 @@ export class App {
   }
 
   public startGame(gameId?: string): void {
+    Logger.log("Starting game", gameId);
     this.containerManager.setViewState("singlePlayer");
     GameStateManager.getInstance().reset();
     this.connectToServer();
@@ -142,7 +143,6 @@ export class App {
         if (!this.game) {
           this.startGame(params.gameId);
         }
-        this.game.loadGameById(params.gameId);
       } else {
         this.router.navigate("/");
       }
