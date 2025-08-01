@@ -31,14 +31,25 @@ export function checkGuess(word: string, guess: string): LetterStatus[] {
   const result: LetterStatus[] = [];
   const wordLetters = word.split("");
   const guessLetters = guess.split("");
+  const wordLetterCounts: { [key: string]: number } = {};
+
+  for (const letter of wordLetters) {
+    wordLetterCounts[letter] = (wordLetterCounts[letter] || 0) + 1;
+  }
 
   for (let i = 0; i < 5; i++) {
     if (guessLetters[i] === wordLetters[i]) {
-      result[i] = 'c';
-    } else if (wordLetters.includes(guessLetters[i])) {
-      result[i] = "p";
+      result[i] = "c";
+      wordLetterCounts[guessLetters[i]]--;
     } else {
       result[i] = "a";
+    }
+  }
+
+  for (let i = 0; i < 5; i++) {
+    if (result[i] === "a" && (wordLetterCounts[guessLetters[i]] || 0) > 0) {
+      result[i] = "p";
+      wordLetterCounts[guessLetters[i]]--;
     }
   }
 
@@ -46,6 +57,10 @@ export function checkGuess(word: string, guess: string): LetterStatus[] {
 }
 
 export function processGuessCore(targetWord: string, guess: string, currentGuesses: string[], maxGuesses: number = 6): GuessResultData {
+  if (typeof guess !== "string") {
+    throw new Error("Guess must be a string");
+  }
+
   if (guess.length !== 5) {
     throw new Error("Guess must be 5 letters");
   }

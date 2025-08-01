@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "npx vite build",
+    "build": "npm test && npx vite build",
     "start": "node dist/server.js",
-    "start:dev": "npx nodemon --exec npx tsx server.ts"
+    "start:dev": "npx nodemon --exec npx tsx server.ts",
+    "test": "npx tsx ../../tests/guessUtils.test.ts || exit 1"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
