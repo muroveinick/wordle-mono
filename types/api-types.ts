@@ -28,5 +28,6 @@ export interface UserShort {
 
 export interface AuthResponse {
   token: string;
+  expiresAt: string;
   user: UserShort;
 }

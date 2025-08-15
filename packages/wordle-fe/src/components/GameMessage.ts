@@ -40,8 +40,7 @@ export class GameMessage {
   }
 
   clear(): void {
-    this.messageElement.textContent = "";
-    this.messageElement.hidden = true;
+    this.messageElement.remove();
     if (this.currentTimeout) {
       clearTimeout(this.currentTimeout);
       this.currentTimeout = null;

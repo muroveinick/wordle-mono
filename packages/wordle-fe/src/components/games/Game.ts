@@ -59,10 +59,16 @@ export class Game extends BaseGame {
   }
 
   private handleGameStarted(data: GameStartedData): void {
-    if (this.gameService.getCurrentGameId() !== data.gameId) {
-      this.onGameStarted(data.gameId);
-    }
-
+    Logger.warn("Game started111:", data);
+    Logger.warn("Current game ID:", this.gameService.getCurrentGameId());
+    Logger.warn("Game ID:", data.gameId);
+    
+    this.processGameId(data.gameId);
+    this.processGameData(data);
+    
+    // Soft redirect to update URL without reinitializing
+    Router.getInstance().navigate(`/games/${data.gameId}`, true);
+    
     this.showMessage("Game started!", "success");
   }
 

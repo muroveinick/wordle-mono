@@ -1,5 +1,6 @@
 import { AuthResponse, LoginRequest, RegisterRequest, UserShort } from "@types";
 import { EnvService } from "./envService";
+import { Router } from "./router";
 
 const API_BASE_URL = EnvService.getAuthBaseUrl();
 
@@ -144,6 +145,11 @@ export class AuthService {
     }
 
     return headers;
+  }
+
+  handleExpiredToken(): void {
+    this.logout();
+    Router.getInstance().navigate("/", true);
   }
 }
 

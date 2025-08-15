@@ -1,6 +1,6 @@
+import { LoginRequest, RegisterRequest } from "@types";
 import express from "express";
 import { AuthService } from "../services/authService";
-import { LoginRequest, RegisterRequest } from "@types";
 
 const router = express.Router();
 
@@ -74,9 +74,10 @@ router.get("/verify", async (req, res) => {
         username: user.username,
         email: user.email,
       },
+      valid: true,
     });
   } catch (error: any) {
-    res.status(401).json({ error: error.message || "Token verification failed" });
+    res.status(401).json({ error: error.message || "Token verification failed", valid: false });
   }
 });
 

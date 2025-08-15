@@ -37,7 +37,7 @@ export class SharedGameSetup {
   private render(): void {
     this.container.innerHTML = `
       <div class="shared-game-setup">
-        <h2 class="text-2xl font-bold text-center mb-6">Shared Coop Game</h2>
+        <h2 class="text-2xl font-bold text-center mb-6">Coop Game</h2>
         
         <div class="setup-options max-w-md mx-auto">
           <div class="mb-6">

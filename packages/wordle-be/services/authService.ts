@@ -8,6 +8,22 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 const BCRYPT_SALT_ROUNDS = 12;
 
 export class AuthService {
+  private static parseExpiresIn(expiresIn: string): number {
+    const match = expiresIn.match(/(\d+)([smhd])/);
+    if (!match) return 3600; // default 1 hour
+    
+    const value = parseInt(match[1]);
+    const unit = match[2];
+    
+    switch (unit) {
+      case 's': return value;
+      case 'm': return value * 60;
+      case 'h': return value * 3600;
+      case 'd': return value * 86400;
+      default: return 3600;
+    }
+  }
+
   static async register(registerData: RegisterRequest): Promise<AuthResponse> {
     const { username, email, password } = registerData;
 
@@ -42,8 +58,13 @@ export class AuthService {
       expiresIn: JWT_EXPIRES_IN,
     } as jwt.SignOptions);
 
+    // Calculate expiration timestamp
+    const expiresIn = AuthService.parseExpiresIn(JWT_EXPIRES_IN);
+    const expiresAt = new Date(Date.now() + expiresIn * 1000);
+
     return {
       token,
+      expiresAt: expiresAt.toISOString(),
       user: {
         id: (user._id as any).toString(),
         username: user.username,
@@ -75,8 +96,13 @@ export class AuthService {
       expiresIn: JWT_EXPIRES_IN,
     } as jwt.SignOptions);
 
+    // Calculate expiration timestamp
+    const expiresIn = AuthService.parseExpiresIn(JWT_EXPIRES_IN);
+    const expiresAt = new Date(Date.now() + expiresIn * 1000);
+
     return {
       token,
+      expiresAt: expiresAt.toISOString(),
       user: {
         id: (user._id as any).toString(),
         username: user.username,
@@ -86,6 +112,7 @@ export class AuthService {
   }
 
   static async verifyToken(token: string): Promise<{ userId: string; username: string }> {
+    console.log("Verifying token", { token });
     try {
       const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; username: string };
       return decoded;

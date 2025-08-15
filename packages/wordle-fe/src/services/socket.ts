@@ -46,6 +46,20 @@ export class SocketService {
     this.socket.on("disconnect", () => {
       Logger.log("Disconnected from server");
     });
+
+    this.socket.on("connect_error", (error) => {
+      Logger.error("Socket connection error:", error);
+      if (error?.message?.includes("authentication") || error?.message?.includes("401") || error?.message?.includes("403")) {
+        authService.handleExpiredToken();
+      }
+    });
+
+    this.socket.on("error", (error) => {
+      Logger.error("Socket error:", error);
+      if (error?.message?.includes("authentication failed") || error?.message?.includes("Socket authentication failed")) {
+        authService.handleExpiredToken();
+      }
+    });
   }
 
   disconnect(): void {

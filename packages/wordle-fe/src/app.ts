@@ -136,6 +136,7 @@ export class App {
 
     // Game route
     this.router.addRoute("/games/:gameId", (params: { gameId: string }) => {
+      Logger.log("Navigating to game", params.gameId);
       this.containerManager.setViewState("singlePlayer");
 
       // If game is not initialized, redirect to auth or initialize first

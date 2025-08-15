@@ -1,5 +1,5 @@
 import express, { Response } from "express";
-import { authMiddleware, AuthRequest, optionalAuthMiddleware } from "../middleware/auth";
+import { authMiddleware, AuthRequest } from "../middleware/auth";
 import * as gameService from "../services/gameService";
 import { wordService } from "../services/wordService";
 
@@ -17,7 +17,7 @@ router.post("/start", authMiddleware, async (req: AuthRequest, res: Response) =>
 });
 
 // Get a specific game by ID
-router.get("/:gameId", optionalAuthMiddleware, async (req: AuthRequest, res: Response) => {
+router.get("/:gameId", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { gameId } = req.params;
     const data = await gameService.getGameById(gameId);
